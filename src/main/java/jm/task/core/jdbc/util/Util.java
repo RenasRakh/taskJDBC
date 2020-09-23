@@ -1,5 +1,6 @@
 package jm.task.core.jdbc.util;
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,11 +11,12 @@ public class Util {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "sql4*vjyjkbn3*sS";
 
+
     public static Connection getConnection(){
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(URL,USERNAME,PASSWORD);
-            return connection;
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            return DriverManager.getConnection(URL,USERNAME,PASSWORD);
         }catch (ClassNotFoundException e) {
             System.err.println("ClassNotFoundException");
         }catch (SQLException e) {
@@ -23,4 +25,6 @@ public class Util {
         }
         return null;
     }
+
+
 }

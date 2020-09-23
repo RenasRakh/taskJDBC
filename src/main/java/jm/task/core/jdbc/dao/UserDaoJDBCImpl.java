@@ -1,6 +1,5 @@
 package jm.task.core.jdbc.dao;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
@@ -14,32 +13,31 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
+    @Override
     public void createUsersTable() {
-        String sqlCommand = "CREATE TABLE users (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20), lastName VARCHAR(20), age TINYINT)";
-
         try (Connection connection = Util.getConnection()){
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlCommand);
+            PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE users (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20), lastName VARCHAR(20), age TINYINT)");
             preparedStatement.executeUpdate();
             System.out.println("Таблица создана.");
 
-        } catch (MySQLSyntaxErrorException m){
+        } catch (SQLSyntaxErrorException m) {
             if (m.toString().contains("Table 'users' already exists")){
                 System.out.println("Таблица уже существует.");
             } else {
                 m.printStackTrace();
             }
-
-       } catch (SQLException throwables) {
+        }catch(SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
+    @Override
     public void dropUsersTable() {
         try (Connection connection = Util.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DROP TABLE users");
             preparedStatement.executeUpdate();
             System.out.println("Таблица удалена.");
-        } catch (MySQLSyntaxErrorException m){
+        } catch (SQLSyntaxErrorException m){
             if (m.toString().contains("Unknown table 'mydbtest.users")){
                 System.out.println("Таблица уже удалена.");
             } else {
@@ -50,12 +48,13 @@ public class UserDaoJDBCImpl implements UserDao {
             throwables.printStackTrace();
         }
 
+
     }
 
+    @Override
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT users (name, lastName, age) VALUES ('" + name + "', '"+ lastName +"', " + age +")";
-        try (Connection connection = Util.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+       try (Connection connection = Util.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT users (name, lastName, age) VALUES ('" + name + "', '"+ lastName +"', " + age +")");
             preparedStatement.executeUpdate();
             System.out.println("User с именем " + name + " добавлен в базу данных.");
         } catch (SQLException throwables) {
@@ -63,19 +62,18 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void removeUserById(long id) {
-        String sql = "DELETE FROM users WHERE id=" + id;
         try (Connection connection = Util.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id=" + id);
             preparedStatement.executeUpdate();
             System.out.println("Пользователь удален.");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         try (Connection connection = Util.getConnection()) {
@@ -95,6 +93,7 @@ public class UserDaoJDBCImpl implements UserDao {
         return list;
     }
 
+    @Override
     public void cleanUsersTable() {
         try (Connection connection = Util.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("DELETE from users");
@@ -104,7 +103,4 @@ public class UserDaoJDBCImpl implements UserDao {
             throwables.printStackTrace();
         }
     }
-
-
-
 }
